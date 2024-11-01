@@ -1,31 +1,37 @@
 package org.self.threadxcelerate.Controllers;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.self.threadxcelerate.DTO.FileData;
+import org.self.threadxcelerate.Models.Customer;
+import org.self.threadxcelerate.Services.BlockingService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/Blocking")
 public class BlockingController {
 
-    @GetMapping("/customers")
-    public String customers() {
-        return "Customers";
+    @Autowired
+    private BlockingService blockingService;
+
+    @GetMapping("/customers/{name}")
+    public List<Customer> customers(@PathVariable String name) {
+        return blockingService.getCustomerByName(name);
     }
 
     @PostMapping("/customer")
-    public String customer() {
-        return "Customers";
+    public Customer customer(@RequestBody Customer customer) {
+        return blockingService.addCustomer(customer);
     }
 
     @GetMapping("/fileRead")
     public String fileRead() {
-        return "FileRead";
+        return blockingService.readFile();
     }
 
     @PostMapping("/fileWrite")
-    public String fileWrite() {
-        return "FileWrite";
+    public boolean fileWrite(@RequestBody FileData fileData) {
+        return blockingService.writeFile(fileData);
     }
 }
