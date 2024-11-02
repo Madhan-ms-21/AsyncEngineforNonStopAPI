@@ -1,33 +1,50 @@
 package org.self.threadxcelerate.Controllers;
 
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.self.threadxcelerate.DTO.FileData;
+import org.self.threadxcelerate.Models.Customer;
+import org.self.threadxcelerate.Services.FileService;
+import org.self.threadxcelerate.Services.NonBlockingService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/api/NonBlocking")
 public class NonBlockingController {
 
-    @GetMapping("/customers")
-    public String customers() {
-        return "Customers";
+
+    @Autowired
+    private NonBlockingService nonBlockingService;
+
+    @Autowired
+    FileService fileService;
+
+    @GetMapping("/customers/{name}")
+    public CompletableFuture<List<Customer>> getCustomerByName(@PathVariable String name) {
+//        log.info("Getting customer by name {} ", name);
+        CompletableFuture<List<Customer>> listCompletableFuture = nonBlockingService.getCustomerByName(name);
+        return listCompletableFuture;
     }
 
-    @PostMapping("/customer")
-    public String customer() {
-        return "Customers";
+    @PostMapping("/customers/save")
+    public CompletableFuture<Customer> addCustomer(@RequestBody Customer customer) {
+//        log.info("Adding user {} to the Database", customer.getName());
+        return nonBlockingService.saveCustomer(customer);
     }
 
     @GetMapping("/fileRead")
-    public String fileRead() {
-        return "FileRead";
+    public CompletableFuture<String> readFile() {
+//        log.info("reading file request");
+        return nonBlockingService.readFile();
     }
 
     @PostMapping("/fileWrite")
-    public String fileWrite() {
-        return "FileWrite";
+    public CompletableFuture<Boolean> writeFile(@RequestBody FileData fileData) {
+//        log.info("Write data {} to File", fileData);
+        return nonBlockingService.writeFile(fileData);
     }
 
 }
